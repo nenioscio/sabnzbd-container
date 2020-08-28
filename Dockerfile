@@ -14,7 +14,7 @@ RUN yum install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-
 
 ENV MARIADB_CONNECTOR_VERSION=3.1.9 
 RUN cd /usr/src && \ 
-    git clone https://github.com/mariadb-corporation/mariadb-connector-c
+    git clone https://github.com/mariadb-corporation/mariadb-connector-c && \
     cd mariadb-connector-c && \
     git checkout ${PAR2_VERSION} && \
     mkdir build && \

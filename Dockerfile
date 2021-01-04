@@ -1,18 +1,17 @@
-FROM ubi8/ubi
+FROM ubi8/ubi-minimal
 
 MAINTAINER Klaus Wagner <nenioscio@gmail.com>
 
 
-# Update image
-RUN yum -y update && \
-    yum -y upgrade && \
-    yum -y clean all
+# # Update image
+# RUN yum -y update && \
+#     yum -y clean all
 
 # Install Requirements
-RUN yum install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib gcc gcc-c++ git make xz unzip cmake automake -y && \
-    yum -y clean all
+RUN microdnf install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib gcc gcc-c++ git make xz unzip cmake automake tar -y && \
+    microdnf -y clean all
 
-ENV MARIADB_CONNECTOR_VERSION=3.1.9 
+ENV MARIADB_CONNECTOR_VERSION=3.1.10 
 RUN cd /usr/src && \ 
     git clone https://github.com/mariadb-corporation/mariadb-connector-c && \
     cd mariadb-connector-c && \
@@ -36,7 +35,7 @@ RUN cd /usr/src && \
     cd .. && \
     rm -rf sqlite-autoconf-${SQLITE_VERSION} sqlite-autoconf-${SQLITE_VERSION}.tar.gz
 
-ENV PYTHON_VERSION=3.8.5
+ENV PYTHON_VERSION=3.9.0
 RUN cd /usr/src && \
     curl -LO https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz && \
     tar xf Python-${PYTHON_VERSION}.tar.xz && \
@@ -61,7 +60,7 @@ RUN cd /usr/src && \
     cd .. && \
     rm -rf par2cmdline
 
-ENV UNRAR_VERSION=5.9.4
+ENV UNRAR_VERSION=6.0.2
 RUN cd /usr/src && \
     curl -LO https://www.rarlab.com/rar/unrarsrc-${UNRAR_VERSION}.tar.gz && \
     tar xf unrarsrc-${UNRAR_VERSION}.tar.gz && \
@@ -78,7 +77,7 @@ RUN mkdir -p /app/venv && \
     pip install --upgrade pip && \
     pip install uwsgi
 
-ENV SABNZBD_VERSION=3.0.1
+ENV SABNZBD_VERSION=3.1.1
 RUN cd /app && \
     curl -LO https://github.com/sabnzbd/sabnzbd/archive/${SABNZBD_VERSION}.zip  && \
     unzip ${SABNZBD_VERSION}.zip && \

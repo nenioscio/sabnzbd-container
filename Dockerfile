@@ -1,4 +1,4 @@
-FROM ubi8/ubi-minimal
+FROM ubi8
 
 MAINTAINER Klaus Wagner <nenioscio@gmail.com>
 
@@ -8,21 +8,20 @@ MAINTAINER Klaus Wagner <nenioscio@gmail.com>
 #     yum -y clean all
 
 # Install Requirements
-RUN microdnf install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib gcc gcc-c++ git make xz unzip cmake automake tar -y && \
-    microdnf -y clean all
+RUN dnf --disableplugin=subscription-manager install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib gcc gcc-c++ git make xz unzip cmake automake tar -y && \
+    dnf -y clean all
 
-ENV MARIADB_CONNECTOR_VERSION=3.1.10 
+ENV MARIADB_CONNECTOR_VERSION=3.1
 RUN cd /usr/src && \ 
     git clone https://github.com/mariadb-corporation/mariadb-connector-c && \
     cd mariadb-connector-c && \
-    git checkout ${PAR2_VERSION} && \
+    git checkout ${MARIADB_CONNECTOR_VERSION} && \
     mkdir build && \
     cd build && \
     cmake .. && \
     make -j 24 install && \
     cd ../.. && \
-    rm -rf mariadb-connector-c-${MARIADB_CONNECTOR_VERSION}-src mariadb-connector-c-${MARIADB_CONNECTOR_VERSION}-src.tar.gz
-
+    rm -rf mariadb-connector-c
 
 ENV SQLITE_VERSION=3330000
 #COPY sqlite-autoconf-${SQLITE_VERSION}.tar.gz /usr/src
@@ -35,7 +34,7 @@ RUN cd /usr/src && \
     cd .. && \
     rm -rf sqlite-autoconf-${SQLITE_VERSION} sqlite-autoconf-${SQLITE_VERSION}.tar.gz
 
-ENV PYTHON_VERSION=3.9.0
+ENV PYTHON_VERSION=3.9.1
 RUN cd /usr/src && \
     curl -LO https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz && \
     tar xf Python-${PYTHON_VERSION}.tar.xz && \

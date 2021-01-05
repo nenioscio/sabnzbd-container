@@ -3,14 +3,15 @@ FROM ubi8
 MAINTAINER Klaus Wagner <nenioscio@gmail.com>
 
 
-# # Update image
+# Update container
 RUN dnf -y --disableplugin=subscription-manager update && \
     yum -y clean all
 
-# Install Requirements
+# Install required packages
 RUN dnf --disableplugin=subscription-manager install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib mariadb-connector-c-devel sqlite-devel gcc gcc-c++ git make xz unzip cmake automake tar -y && \
     dnf -y clean all
 
+# Install python interpreter
 ENV PYTHON_VERSION=3.9.1
 RUN cd /usr/src && \
     curl -LO https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz && \
@@ -22,6 +23,14 @@ RUN cd /usr/src && \
     cd .. && \
     rm -rf Python-${PYTHON_VERSION} Python-${PYTHON_VERSION}.tar.xz
 
+# Install python virtualenv and uwsgi
+RUN mkdir -p /app/venv && \
+    /opt/python3/bin/virtualenv /app/venv && \
+    source /app/venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install uwsgi
+
+# Install par2 program (sabnzdb rependency)
 ENV PAR2_VERSION=v0.8.1
 RUN cd /usr/src && \
     git clone https://github.com/Parchive/par2cmdline.git && \
@@ -33,6 +42,7 @@ RUN cd /usr/src && \
     cd .. && \
     rm -rf par2cmdline
 
+# Install par2 program (sabnzdb rependency)
 ENV UNRAR_VERSION=6.0.2
 RUN cd /usr/src && \
     curl -LO https://www.rarlab.com/rar/unrarsrc-${UNRAR_VERSION}.tar.gz && \
@@ -43,13 +53,7 @@ RUN cd /usr/src && \
     cd .. && \
     rm -rf unrar unrarsrc-${UNRAR_VERSION}.tar.gz
 
-
-RUN mkdir -p /app/venv && \
-    /opt/python3/bin/virtualenv /app/venv && \
-    source /app/venv/bin/activate && \
-    pip install --upgrade pip && \
-    pip install uwsgi
-
+# Install application
 ENV SABNZBD_VERSION=3.1.1
 RUN cd /app && \
     git clone https://github.com/sabnzbd/sabnzbd.git && \
@@ -59,4 +63,5 @@ RUN cd /app && \
     source /app/venv/bin/activate && \
     pip install -r requirements.txt
 
+# Setup CMD to run on constainer startup
 CMD ["/app/venv/bin/python", "/app/sabnzbd/SABnzbd.py", "--config", "/config", "--disable-file-log"]

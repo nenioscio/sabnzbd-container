@@ -8,40 +8,14 @@ MAINTAINER Klaus Wagner <nenioscio@gmail.com>
 #     yum -y clean all
 
 # Install Requirements
-RUN dnf --disableplugin=subscription-manager install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib gcc gcc-c++ git make xz unzip cmake automake tar -y && \
+RUN dnf --disableplugin=subscription-manager install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib mariadb-connector-c-devel sqlite-devel gcc gcc-c++ git make xz unzip cmake automake tar -y && \
     dnf -y clean all
-
-ENV MARIADB_CONNECTOR_VERSION=3.1
-RUN cd /usr/src && \ 
-    git clone https://github.com/mariadb-corporation/mariadb-connector-c && \
-    cd mariadb-connector-c && \
-    git checkout ${MARIADB_CONNECTOR_VERSION} && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make -j 24 install && \
-    cd ../.. && \
-    rm -rf mariadb-connector-c
-
-ENV SQLITE_VERSION=3330000
-#COPY sqlite-autoconf-${SQLITE_VERSION}.tar.gz /usr/src
-RUN cd /usr/src && \
-    curl -LO https://www.sqlite.org/2020/sqlite-autoconf-${SQLITE_VERSION}.tar.gz  && \
-    tar xf sqlite-autoconf-${SQLITE_VERSION}.tar.gz && \
-    cd sqlite-autoconf-${SQLITE_VERSION} && \
-    ./configure --prefix=/opt/sqlite3 && \
-    make -j 24 install && \
-    cd .. && \
-    rm -rf sqlite-autoconf-${SQLITE_VERSION} sqlite-autoconf-${SQLITE_VERSION}.tar.gz
 
 ENV PYTHON_VERSION=3.9.1
 RUN cd /usr/src && \
     curl -LO https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz && \
     tar xf Python-${PYTHON_VERSION}.tar.xz && \
     cd Python-${PYTHON_VERSION} && \
-    export LD_RUN_PATH=/opt/sqlite3/lib && \
-    export LDFLAGS="-L/opt/sqlite3/lib" && \
-    export CPPFLAGS="-I/opt/sqlite3/include"  && \
     ./configure --prefix=/opt/python3 --enable-optimizations && \
     make -j 24 install && \
     /opt/python3/bin/pip3 install virtualenv && \

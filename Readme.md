@@ -33,7 +33,7 @@ Show running containers
 =======================
 
 ```bash
-[abraxas@bfp sabnzbd-container]$ podman ps
+[user@server sabnzbd-container]$ podman ps
 CONTAINER ID  IMAGE                       COMMAND               CREATED        STATUS            PORTS   NAMES
 2f635ef3da66  localhost/kw-sabnzbd:3.1.1  /app/venv/bin/pyt...  6 seconds ago  Up 4 seconds ago          sabnzbd
 ```

@@ -4,8 +4,8 @@ MAINTAINER Klaus Wagner <nenioscio@gmail.com>
 
 
 # # Update image
-# RUN yum -y update && \
-#     yum -y clean all
+RUN dnf -y --disableplugin=subscription-manager update && \
+    yum -y clean all
 
 # Install Requirements
 RUN dnf --disableplugin=subscription-manager install curl hostname which libffi-devel zlib-devel bzip2-devel openssl-devel zlib mariadb-connector-c-devel sqlite-devel gcc gcc-c++ git make xz unzip cmake automake tar -y && \
@@ -52,10 +52,10 @@ RUN mkdir -p /app/venv && \
 
 ENV SABNZBD_VERSION=3.1.1
 RUN cd /app && \
-    curl -LO https://github.com/sabnzbd/sabnzbd/archive/${SABNZBD_VERSION}.zip  && \
-    unzip ${SABNZBD_VERSION}.zip && \
-    mv sabnzbd-${SABNZBD_VERSION} sabnzbd && \
+    git clone https://github.com/sabnzbd/sabnzbd.git && \
     cd sabnzbd && \
+    git checkout ${SABNZBD_VERSION} && \
+    rm -rf .git .gitignore && \
     source /app/venv/bin/activate && \
     pip install -r requirements.txt
 
